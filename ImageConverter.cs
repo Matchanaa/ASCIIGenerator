@@ -10,18 +10,18 @@ namespace ASCIIGenerator
     public Luminances Config { get; }
 
     /// <summary>
-    /// 
+    /// Pulls the configuration list into this class.
     /// </summary>
-    /// <param name="config"></param>
+    /// <param name="config"> The initialised list of Luminance values and characters. </param>
     public ImageConverter(Luminances config)
     {
       Config = config;
     }
 
     /// <summary>
-    /// 
+    /// Uses image size to iterate over each pixel, select an appropriate ASCII character, and add it to a mutable string.
     /// </summary>
-    /// <param name="resizedImage"></param>
+    /// <param name="resizedImage"> The resized version of the original image. </param>
     /// <returns></returns>
     public string ReadPixels(Bitmap resizedImage)
     {

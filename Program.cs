@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 
 namespace ASCIIGenerator
@@ -13,8 +14,10 @@ namespace ASCIIGenerator
     /// </summary>
     static void Main(string[] args)
     {
+      
+      Console.WriteLine("Thank you for using this program! \nFor best results, I recommend: \n-Fullscreen Window, \n-Background colour White, \n-Text colour Black, \n-Font size 10 Consolas. \nPlease enter the full file path of your .jpg, .bmp or .png image...\n");
+      
       //Reads in the selected file location. Checks if the file is compatible with the program.
-      Console.WriteLine("Please enter the full file path of your .jpg, .bmp or .png image...\n");
       string imagePath = Console.ReadLine();
 
       try
@@ -22,13 +25,14 @@ namespace ASCIIGenerator
         //Checks if the path resolves.
         if (File.Exists(imagePath))
         {
+
           //Checks the image extension for compatibility.
           if (IsImage(imagePath))
           {
             //Reads in the image from user selected file location as a Bitmap.
             var readImage = new Bitmap(imagePath);
 
-            //Calculates an appropriate scaling for the selected image. Corrects for possibility of scale being equal to zero.
+            //Calculates an appropriate scaling for the selected image. Corrects for possibility of scale being less than zero.
             int scale = readImage.Width / 150;
             if (scale <= 0) scale = 1;
 
@@ -43,9 +47,10 @@ namespace ASCIIGenerator
             //Allows user to save the output.
             SaveCheck(saveToString, imagePath);
           }
+
           else
           {
-            Console.WriteLine("The selected file was not a .jpg, .bmp or.png.");
+            Console.WriteLine("The selected file was not a .jpg, .bmp or .png.");
           }
         }
         else
@@ -60,7 +65,7 @@ namespace ASCIIGenerator
     }
 
     /// <summary>
-    /// Checks if the given file is a compatible image.
+    /// Checks if the given image is a .jpg, .bmp or .png.
     /// </summary>
     /// <param name="imagePath"> File name of the image. </param>
     /// <returns></returns>
