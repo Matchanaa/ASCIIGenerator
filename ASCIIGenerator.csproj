@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -11,17 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Image\Aquarium.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Image\Aquarium.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Image\Bog Standard Old Man.png">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </None>
-    <None Update="Image\Hugo.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <None Update="Image\Test Image.png">
     </None>
     <None Update="Image\Disaratti.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
