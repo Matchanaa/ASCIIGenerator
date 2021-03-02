@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ASCIIGenerator
+﻿namespace ASCIIGenerator
 {
   /// <summary>
   /// Constructors for the Luminance and ASCII character values, contained in the Luminances List.
