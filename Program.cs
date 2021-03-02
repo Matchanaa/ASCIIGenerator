@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Threading;
 
 namespace ASCIIGenerator
 {
@@ -10,15 +11,30 @@ namespace ASCIIGenerator
   {
     /// <summary>
     /// Has the user input a file path, and tests that the file and path are compatible.
-    /// produces a resized ASCII rendering of the image, and provides an option to output the rendering in a text file.
+    /// Produces a resized ASCII rendering of the image, and provides an option to output the rendering in a text file.
     /// </summary>
     static void Main(string[] args)
     {
       
-      Console.WriteLine("Thank you for using this program! \nFor best results, I recommend: \n-Fullscreen Window, \n-Background colour White, \n-Text colour Black, \n-Font size 10 Consolas. \nPlease enter the full file path of your .jpg, .bmp or .png image...\n");
+      Console.WriteLine("Thank you for using this program! \nFor best results, " +
+        "I recommend: \n-Fullscreen Window, \n-Background colour White, \n-Text colour Black, " +
+        "\n-Font size 10 Consolas. \nPlease enter the full file path of your .jpg, .bmp, .png or .gif image...\n");
       
       //Reads in the selected file location. Checks if the file is compatible with the program.
       string imagePath = Console.ReadLine();
+
+      //Reads in the image from user selected file location as a Bitmap.
+      var readImage = new Bitmap(imagePath);
+
+      //Gets an instance of the Luminance values list. Uses this and the image to generate the ASCII rendering.
+      var config = new Luminances();
+      var imageConverter = new ImageConverter(config);
+
+      //Allows .txt exporting methods to be called.
+      var saveChecks = new SaveChecks();
+
+      //Allows checks that differentiate image extensions to be called.
+      var extensionChecks = new ExtensionChecks();
 
       try
       {
@@ -27,11 +43,8 @@ namespace ASCIIGenerator
         {
 
           //Checks the image extension for compatibility.
-          if (IsImage(imagePath))
+          if (extensionChecks.IsImage(imagePath))
           {
-            //Reads in the image from user selected file location as a Bitmap.
-            var readImage = new Bitmap(imagePath);
-
             //Calculates an appropriate scaling for the selected image. Corrects for possibility of scale being less than zero.
             int scale = readImage.Width / 150;
             if (scale <= 0) scale = 1;
@@ -39,58 +52,86 @@ namespace ASCIIGenerator
             //Resizes image based on valid scalar.
             var resizedImage = new Bitmap(readImage, new Size(readImage.Width / scale, readImage.Height / scale));
 
-            //Gets an instance of the Luminance values list. Uses this and the image to generate the ASCII rendering.
-            var config = new Luminances();
-            var imageConverter = new ImageConverter(config);
-            string saveToString = imageConverter.ReadPixels(resizedImage);
+            //Converts the image to ASCII art pixel by pixel and writes it to console as a single string.
+            string frameOfASCII = imageConverter.ReadPixels(resizedImage);
+            Console.Write(frameOfASCII);
 
             //Allows user to save the output.
-            SaveCheck(saveToString, imagePath);
+            saveChecks.FrameSaveCheck(frameOfASCII, imagePath);
           }
 
-          else
+          //If the image is not a .png, .bmp, or .jpg, checks if the image is .gif.
+          else if (extensionChecks.IsGif(imagePath))
           {
-            Console.WriteLine("The selected file was not a .jpg, .bmp or .png.");
+            //The list that each ASCII generated frame of the gif will be added to.
+            List<string> splitGif = new List<string>();
+
+            //Calculates an appropriate scaling for the selected frame. Corrects for possibility of scale being less than zero.
+            int scale = readImage.Width / 100;
+            if (scale <= 0) scale = 1;
+
+            //Gets the number of frames in the .gif.
+            int gifLength = readImage.GetFrameCount(FrameDimension.Time);
+
+            //Converts each frame to ASCII art pixel by pixel and writes it to console, one string per frame.
+            for (int index = 0; index < gifLength; index++)
+            {
+              //Picks the next frame.
+              readImage.SelectActiveFrame(FrameDimension.Time, index);
+
+              //Creates a new bitmap from the selected frame of the original .gif, and scales it to an appropriate size.
+              var resizedImage = new Bitmap(readImage, new Size(readImage.Width / scale, readImage.Height / scale));
+
+              //Converts the resized frame and stores the resulting ASCII string in the list.
+              string frameOfASCII = imageConverter.ReadPixels(resizedImage);
+              splitGif.Add(frameOfASCII);
+            }
+
+            //Plays each frame on a loop until space is pressed.
+            PlayGif(splitGif, gifLength);
+            
+            //Gives the user the option to save the ASCII strings to a .txt.
+            saveChecks.GifSaveCheck(splitGif, imagePath);
           }
+          else  
+            Console.WriteLine("The selected file was not a .jpg, .bmp, .png or .gif.");
+
         }
-        else
-        {
+        else 
           Console.WriteLine("The file path could not be found.");
+
+      }
+      catch (Exception e) 
+      {
+        //Unexpected error
+        Console.WriteLine(e); 
+      }
+    }
+
+    /// <summary>
+    /// 'Plays' the '.gif' by writing each frame to console on top of the previous, pausing between each frame to give a roughly 15 fps timing.
+    /// Writes each frame in sequence, looping until the spacebar is pressed.
+    /// </summary>
+    /// <param name="splitGif"> List of ASCII strings, for each frame of the .gif </param>
+    /// <param name="gifLength"> Number of frames in the .gif </param>
+    public static void PlayGif(List<string> splitGif, int gifLength)
+    {
+      //Clears the window to allow each frame to render at the same position.
+      Console.Clear();
+      Console.WriteLine("Press spacebar to continue...");
+
+      //Listens for a key press and checks that it is space. Done in this way to prevent keys being entered into terminal during GifSaveCheck, while allowing '.gif' to loop.
+      while (!(Console.KeyAvailable && Console.ReadKey(true).Key == ConsoleKey.Spacebar))
+      {
+        for (int index = 0; index < gifLength; index++)
+        {
+          //Writes the ASCII string for the currently selected frame.
+          Console.WriteLine(splitGif[index]);
+
+          //Approximately 15 frames per second (1000ms/15), a typical .gif speed.
+          Thread.Sleep(67);
+          Console.SetCursorPosition(0, 1);
         }
-      }
-      catch (Exception e) //Unexpected error
-      {
-        Console.WriteLine(e);
-      }
-    }
-
-    /// <summary>
-    /// Checks if the given image is a .jpg, .bmp or .png.
-    /// </summary>
-    /// <param name="imagePath"> File name of the image. </param>
-    /// <returns></returns>
-    public static bool IsImage(string imagePath)
-    {
-      var ext = Path.GetExtension(imagePath).ToLower();
-      return (ext == ".jpg" || ext == ".bmp" || ext == ".png");
-    }
-
-    /// <summary>
-    /// Allows the user to save the output to a text file, which is saved to the same location and with the same name as the source image.
-    /// </summary>
-    /// <param name="saveToString"> Output of the ASCII Selecter as a string. </param>
-    /// <param name="imagePath"> Location of the original source image. </param>
-    public static void SaveCheck(string saveToString, string imagePath)
-    {
-      Console.WriteLine("\nSave to .txt file? (Y/N)");
-      string response = Console.ReadLine();
-      if (response.Equals("y", StringComparison.OrdinalIgnoreCase) || response.Equals("yes", StringComparison.OrdinalIgnoreCase))
-      {
-        //Generates the full output path from the original source image path. Writes the ASCII to a text file by that name.
-        string path = Path.GetDirectoryName(imagePath);
-        string imageName = ((Path.GetFileNameWithoutExtension(imagePath) + ".txt"));
-        string outputPath = Path.Combine(path, imageName);
-        File.WriteAllText(outputPath, saveToString);
       }
     }
   }

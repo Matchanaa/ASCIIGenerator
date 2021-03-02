@@ -4,10 +4,13 @@ using System.Text;
 
 namespace ASCIIGenerator
 {
+  /// <summary>
+  /// Represents the luminance values for each ASCII character.
+  /// </summary>
   public class Luminances
   {
     /// <summary>
-    /// Allows the Luminance Configuration to be referenced.
+    /// Stores Luminance values and respective ASCII characters.
     /// </summary>
     public List<Luminance> Configuration { get; set; }
 
