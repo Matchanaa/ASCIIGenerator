@@ -5,17 +5,17 @@ using System.Text;
 namespace ASCIIGenerator
 {
   /// <summary>
-  /// Constructors for each of the Luminance values in the Luminances List.
+  /// Constructors for the Luminance and ASCII character values, contained in the Luminances List.
   /// </summary>
   public class Luminance
   {
     /// <summary>
-    /// Allows the getting and setting of the Luminance values. 
+    /// Defines each Luminance value, an approximation of the amount of red, blue and green light in a pixel.
     /// </summary>
     public int LuminanceValue { get; set; }
 
     /// <summary>
-    /// Allows the getting and setting of ASCII characters for each Luminance.
+    /// Defines an ASCII character for each Luminance value.
     /// </summary>
     public string CharValue { get; set; }
   }
