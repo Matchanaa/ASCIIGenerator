@@ -15,7 +15,6 @@ namespace ASCIIGenerator
     /// </summary>
     static void Main(string[] args)
     {
-      
       Console.WriteLine("Thank you for using this program! \nFor best results, " +
         "I recommend: \n-Fullscreen Window, \n-Background colour White, \n-Text colour Black, " +
         "\n-Font size 10 Consolas. \nPlease enter the full file path of your .jpg, .bmp, .png or .gif image...\n");
@@ -24,15 +23,16 @@ namespace ASCIIGenerator
       string imagePath = Console.ReadLine();
 
       //Reads in the image from user selected file location as a Bitmap.
-      Bitmap readImage;
+      Bitmap readImage = null;
       try
       {
         readImage = new Bitmap(imagePath);
       }
-      catch (ArgumentException e)
+      catch (ArgumentException)
       {
-        Console.WriteLine("File loading failed. Is your file definitely a valid .jpg, .bmp, .png or .gif image?");
-        throw new ArgumentException("File loading failed.", e);
+        Console.WriteLine("File loading failed. Is your file definitely a valid .jpg, .bmp, .png or .gif image?" +
+          "\nPress any key to close this window...");
+        Environment.Exit(1);
       }
 
       //Gets an instance of the Luminance values list. Uses this and the image to generate the ASCII rendering.
