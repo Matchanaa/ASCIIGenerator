@@ -69,7 +69,7 @@ namespace ASCIIGenerator
 
       //Casts the selected luminance value to an int (and normalises within the luminance range, just in case)
       int index = (int)luminance;
-      if (index < 0 && index > Config.Configuration.Count)
+      if (index < 0 || index > Config.Configuration.Count)
       {
         if (index < 0) index = 0;
         else index = 255;

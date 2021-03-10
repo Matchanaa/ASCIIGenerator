@@ -24,7 +24,16 @@ namespace ASCIIGenerator
       string imagePath = Console.ReadLine();
 
       //Reads in the image from user selected file location as a Bitmap.
-      var readImage = new Bitmap(imagePath);
+      Bitmap readImage;
+      try
+      {
+        readImage = new Bitmap(imagePath);
+      }
+      catch (ArgumentException e)
+      {
+        Console.WriteLine("File loading failed. Is your file definitely a valid .jpg, .bmp, .png or .gif image?");
+        throw new ArgumentException("File loading failed.", e);
+      }
 
       //Gets an instance of the Luminance values list. Uses this and the image to generate the ASCII rendering.
       var config = new Luminances();
