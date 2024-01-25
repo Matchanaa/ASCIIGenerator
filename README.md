@@ -7,4 +7,4 @@ ASCII characters are selected based on the relative luminances of a subset of th
 
 The calculation for relative luminance, (0.375 * Red) + (0.5 * Green) + (0.125 * Blue) is an approximation of (0.2126 * R) + (0.7152 * G) + (0.0722 * B), a reflection of how much certain light colours are perceived by the eye.
 
-Date Created: 04/02/21 Last Updated: 02/03/21 Matt Kanumilli
+Date Created: 04/02/21 Last Updated: 02/03/21 Matcha Ennay
